@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: oci://registry-1.docker.io/2igs
+  version: 0.0.4+16e9b9241d
+digest: sha256:ba2eafe9d6b9941c6a3f04ebabc0a1a2f45a5b74856360a8827d3ccbe3d28dca
+generated: "2023-08-28T15:19:36.505648143Z"

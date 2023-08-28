@@ -11,6 +11,6 @@ image:
 #   - name:
 #     public:
 
-# ingress:
-#   enable: false
+ingress:
+  enable: false
 #   host:

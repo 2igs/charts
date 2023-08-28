@@ -2,7 +2,7 @@ apiVersion: v2
 name: ibexcode
 description: Ibexcode is code-server with pre-installed development tools
 type: application
-version: 0.0.1
+version: 0.0.2
 appVersion: 0.0.2
 keywords:
 - ide

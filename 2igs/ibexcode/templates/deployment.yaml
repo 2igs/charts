@@ -36,11 +36,11 @@ spec:
           name: secrets
         {{- end }}
         {{- range $key, $val := .Values.secrets.ssh }}
-        - mountPath: /root/.ssh/ssh_{{ $val.name }}
-          subPath: ssh_{{ $val.name }}
+        - mountPath: /root/.ssh/{{ $val.name }}
+          subPath: {{ $val.name }}
           name: secrets
-        - mountPath: /root/.ssh/ssh_{{ $val.name }}.pub
-          subPath: ssh_{{ $val.name }}.pub
+        - mountPath: /root/.ssh/{{ $val.name }}.pub
+          subPath: {{ $val.name }}.pub
           name: secrets
         {{- end }}
       volumes:
@@ -56,10 +56,10 @@ spec:
           defaultMode: 0400
           items:
           {{- range $key, $val := .Values.secrets.ssh }}
-          - key: ssh_{{ $val.name }}_public
-            path: ssh_{{ $val.name }}.pub
-          - key: ssh_{{ $val.name }}_private
-            path: ssh_{{ $val.name }}
+          - key: {{ $val.name }}_public
+            path: {{ $val.name }}.pub
+          - key: {{ $val.name }}_private
+            path: {{ $val.name }}
           {{- end }}
           {{- range $key, $val := .Values.secrets.ca }}
           - key: ca_{{ $val.name }}_public

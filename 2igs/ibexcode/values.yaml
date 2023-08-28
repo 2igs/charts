@@ -1,0 +1,16 @@
+image:
+  repository: docker.io/2igs/ibexcode
+  tag:
+
+# secrets:
+#   ssh:
+#   - name:
+#     public:
+#     private:
+#   ca:
+#   - name:
+#     public:
+
+# ingress:
+#   enable: false
+#   host:

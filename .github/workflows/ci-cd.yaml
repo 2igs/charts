@@ -1,0 +1,72 @@
+name: CI/CD
+on:
+  pull_request:
+    branches:
+    - main
+    types:
+    - closed
+    - synchronize
+    - opened
+
+env:
+  REGISTRY: docker.io
+  DIFF_URL: "${{github.event.pull_request.diff_url}}"
+  IS_MERGED: ${{github.event.pull_request.merged == true}}
+jobs: 
+  ci-cd:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Get modified charts
+      run: |
+        CHARTS=$(curl -fsL $DIFF_URL \
+        | sed -ne 's/^diff --git a\/2igs\///gp' \
+        | awk -F'/' '{print $1}' | sed '/^$/d' | uniq)
+        NUM_CHARTS=$(printf "%s\n" $CHARTS | sed '/^$/d' | awk 'END{print NR}')
+        
+        if [ ${NUM_CHARTS} != "0" ]
+        then
+          echo -e "Changed charts:\n$CHARTS"
+          echo "Number of charts changed: $NUM_CHARTS"
+        
+          if [ ${NUM_CHARTS} == "1" ]
+          then 
+            CHART=$CHARTS
+            SHA="${GITHUB_SHA:0:10}"
+            BUILD_CONTEXT="2igs/$CHART"
+            VERSION=$(sed -ne "s/^version: //p" ${BUILD_CONTEXT}/Chart.yaml)
+            
+            if [ $IS_MERGED == "false" ]
+            then
+              VERSION=$(echo $VERSION | sed "s/.*/\0+$SHA/")
+            fi
+
+            echo "CHART=${CHART}" >> $GITHUB_ENV
+            echo "SHA=${SHA}" >> $GITHUB_ENV 
+            echo "BUILD_CONTEXT=${BUILD_CONTEXT}" >> $GITHUB_ENV  
+            echo "VERSION=${VERSION}" >> $GITHUB_ENV      
+            exit 0
+          else
+            echo "::error::More than one chart was changed!"
+            exit 1
+          fi
+        fi
+        echo "::error::No chart was changed!" >&2
+        exit 1
+    - name: Install Helm
+      run: |
+        wget https://get.helm.sh/helm-v3.12.3-linux-amd64.tar.gz \
+        && tar -zxvf helm-v3.12.3-linux-amd64.tar.gz \
+        && mv linux-amd64/helm /usr/local/bin \
+        && rm -rf helm-v3.12.3-linux-amd64.tar.gz linux-amd64
+    - name: Build helm chart
+      run: |
+        cd $BUILD_CONTEXT
+        helm dependency update .
+        helm package --version=$VERSION .
+        echo "PACKAGE=${BUILD_CONTEXT}/${CHART}-${VERSION}.tgz" >> $GITHUB_ENV
+    - name: Upload chart
+      run: |
+        helm registry login -u=2igs -p=${{ secrets.DOCKER_CD_TOKEN }} docker.io
+        helm push $PACKAGE oci://registry-1.docker.io/2igs

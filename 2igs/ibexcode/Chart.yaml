@@ -1,0 +1,14 @@
+apiVersion: v2
+name: ibexcode
+description: Ibexcode is code-server with pre-installed development tools
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+keywords:
+- ide
+- development
+maintainers:
+- name: 2igs.
+  url: https://github.com/2igs/charts
+sources:
+- https://github.com/2igs/charts/tree/main/2igs/ibexcode

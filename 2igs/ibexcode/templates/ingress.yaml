@@ -1,0 +1,19 @@
+{{ if eq (.Values.ingress.enable | toString) "true" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+spec:
+  rules:
+  - host: {{ .Values.host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: {{ include "common.fullname" . }}
+            port:
+              number: 80
+        pathType: Prefix
+{{ end }}

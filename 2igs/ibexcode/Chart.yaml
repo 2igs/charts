@@ -3,12 +3,16 @@ name: ibexcode
 description: Ibexcode is code-server with pre-installed development tools
 type: application
 version: 0.0.1
-appVersion: 0.0.1
+appVersion: 0.0.2
 keywords:
 - ide
 - development
 maintainers:
-- name: 2igs.
+- name: 2igs
   url: https://github.com/2igs/charts
 sources:
 - https://github.com/2igs/charts/tree/main/2igs/ibexcode
+dependencies:
+- name: common
+  version: 0.0.4+16e9b9241d
+  repository: "oci://registry-1.docker.io/2igs"

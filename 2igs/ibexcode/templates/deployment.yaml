@@ -25,3 +25,43 @@ spec:
         - name: http
           containerPort: 80
           protocol: TCP
+        volumeMounts:
+        {{- if eq "true" (.Values.storage.enable | toString) }}
+        - mountPath: /storage
+          name: storage
+        {{- end }}
+        {{- range $key, $val := .Values.secrets.ca }}
+        - mountPath: /usr/local/share/ca-certificates/ca_{{ $val.name }}.crt
+          subPath: ca_{{ $val.name }}.crt
+          name: secrets
+        {{- end }}
+        {{- range $key, $val := .Values.secrets.ssh }}
+        - mountPath: /root/.ssh/ssh_{{ $val.name }}
+          subPath: ssh_{{ $val.name }}
+          name: secrets
+        - mountPath: /root/.ssh/ssh_{{ $val.name }}.pub
+          subPath: ssh_{{ $val.name }}.pub
+          name: secrets
+        {{- end }}
+      volumes:
+      {{- if eq "true" (.Values.storage.enable | toString) }}
+      - name: storage
+        hostPath: 
+          path: {{ .Values.storage.hostPath }}
+          type: DirectoryOrCreate
+      {{- end }}
+      - name: secrets
+        secret:
+          secretName: {{ include "common.fullname" . }}
+          defaultMode: 0400
+          items:
+          {{- range $key, $val := .Values.secrets.ssh }}
+          - key: ssh_{{ $val.name }}_public
+            path: ssh_{{ $val.name }}.pub
+          - key: ssh_{{ $val.name }}_private
+            path: ssh_{{ $val.name }}
+          {{- end }}
+          {{- range $key, $val := .Values.secrets.ca }}
+          - key: ca_{{ $val.name }}_public
+            path: ca_{{ $val.name }}.crt
+          {{- end }}

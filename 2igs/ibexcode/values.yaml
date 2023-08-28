@@ -14,3 +14,7 @@ image:
 ingress:
   enable: false
 #   host:
+
+storage:
+  enable: false
+  # hostPath:

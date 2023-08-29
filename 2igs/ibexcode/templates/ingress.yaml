@@ -16,7 +16,15 @@ spec:
             port:
               number: 80
         pathType: Prefix
-  tls:
-  - hosts: [{{ .Values.ingress.host }}]
-    secretName: {{ .Values.ingress.tlsSecretName }}
+  - host: "*.{{ .Values.ingress.host }}"
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: {{ include "common.fullname" . }}
+            port:
+              number: 80
+        pathType: Prefix
+  tls: {{ .Values.ingress.tls | toYaml | nindent 2 }}
 {{ end }}

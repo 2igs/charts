@@ -14,7 +14,7 @@ image:
 ingress:
   enable: false
   host:
-  tlsSecretName:
+  tls:
 
 storage:
   enable: false

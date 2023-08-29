@@ -2,15 +2,6 @@ image:
   repository: docker.io/2igs/ibexcode
   tag:
 
-# secrets:
-#   ssh:
-#   - name:
-#     public:
-#     private:
-#   ca:
-#   - name:
-#     public:
-
 ingress:
   enable: false
   host:
@@ -20,7 +11,19 @@ storage:
   enable: false
   # hostPath:
 
-# gitconfig: |-
-#   [user]
-#     name = ""
-#     email = ""
+
+secrets:
+  config: |-
+    bind-addr: 0.0.0.0:80
+    auth: none
+  # gitconfig: |-
+  #   [user]
+  #     name = user
+  #     email = "user@example.com"
+  # ssh:
+  # - name:
+  #   public:
+  #   private:
+  # ca:
+  # - name: self
+  #   public:

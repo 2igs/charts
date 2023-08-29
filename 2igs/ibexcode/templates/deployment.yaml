@@ -18,9 +18,6 @@ spec:
       - name: {{ .Chart.Name }}
         image: {{ $image }}
         imagePullPolicy: IfNotPresent
-        env:
-        - name: PORT
-          value: "80"
         ports:
         - name: http
           containerPort: 80
@@ -43,9 +40,14 @@ spec:
           subPath: {{ $val.name }}.pub
           name: secrets
         {{- end }}
-        {{- if .Values.gitconfig }}
+        {{- if .Values.secrets.gitconfig }}
         - mountPath: /etc/gitconfig
           subPath: gitconfig
+          name: secrets
+        {{- end }}
+        {{- if .Values.secrets.config }}
+        - mountPath: root/.config/code-server/config.yaml
+          subPath: config.yaml
           name: secrets
         {{- end }}
       volumes:
@@ -70,7 +72,11 @@ spec:
           - key: ca_{{ $val.name }}_public
             path: ca_{{ $val.name }}.crt
           {{- end }}
-          {{- if .Values.gitconfig }}
+          {{- if .Values.secrets.gitconfig }}
           - key: gitconfig
             path: gitconfig
+          {{- end }}
+          {{- if .Values.secrets.config }}
+          - key: config
+            path: config.yaml
           {{- end }}

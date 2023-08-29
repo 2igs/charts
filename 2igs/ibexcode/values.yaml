@@ -15,8 +15,22 @@ storage:
 
 secrets:
   config: |-
-    bind-addr: 0.0.0.0:80
+    bind-addr: 0.0.0.0:8080
     auth: none
+  podmanConfig: |+
+    [containers]
+    netns="host"
+    userns="host"
+    ipcns="host"
+    utsns="host"
+    cgroupns="host"
+    cgroups="disabled"
+    log_driver = "k8s-file"
+    default_sysctls = [] # Workaround
+    [engine]
+    cgroup_manager = "cgroupfs"
+    events_logger="file"
+    runtime="crun"
   # gitconfig: |-
   #   [user]
   #     name = user

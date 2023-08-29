@@ -30,6 +30,7 @@ spec:
             - "MKNOD"
             - "SYS_CHROOT"
             - "SETFCAP"
+            - "NET_ADMIN"
         ports:
         - name: http
           containerPort: {{ .Values.ingress.containerPort }}
@@ -62,6 +63,9 @@ spec:
           subPath: config.yaml
           name: secrets
         {{- end }}
+        - mountPath: /etc/containers/containers.conf
+          subPath: containers.conf
+          name: secrets
       volumes:
       {{- if eq "true" (.Values.storage.enable | toString) }}
       - name: storage
@@ -92,3 +96,5 @@ spec:
           - key: config
             path: config.yaml
           {{- end }}
+          - key: podmanConfig
+            path: containers.conf

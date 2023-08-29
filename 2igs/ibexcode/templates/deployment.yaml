@@ -18,12 +18,22 @@ spec:
       - name: {{ .Chart.Name }}
         image: {{ $image }}
         imagePullPolicy: IfNotPresent
-        env:
-        - name: PORT
-          value: "80"
+        resources:
+          limits:
+            smarter-devices/fuse: 1
+          requests:
+            smarter-devices/fuse: 1
+        securityContext:
+          capabilities:
+            add:
+            - "SYS_ADMIN"
+            - "MKNOD"
+            - "SYS_CHROOT"
+            - "SETFCAP"
+            - "NET_ADMIN"
         ports:
         - name: http
-          containerPort: 80
+          containerPort: {{ .Values.ingress.containerPort }}
           protocol: TCP
         volumeMounts:
         {{- if eq "true" (.Values.storage.enable | toString) }}
@@ -36,13 +46,26 @@ spec:
           name: secrets
         {{- end }}
         {{- range $key, $val := .Values.secrets.ssh }}
-        - mountPath: /root/.ssh/ssh_{{ $val.name }}
-          subPath: ssh_{{ $val.name }}
+        - mountPath: /root/.ssh/{{ $val.name }}
+          subPath: {{ $val.name }}
           name: secrets
-        - mountPath: /root/.ssh/ssh_{{ $val.name }}.pub
-          subPath: ssh_{{ $val.name }}.pub
+        - mountPath: /root/.ssh/{{ $val.name }}.pub
+          subPath: {{ $val.name }}.pub
           name: secrets
         {{- end }}
+        {{- if .Values.secrets.gitconfig }}
+        - mountPath: /etc/gitconfig
+          subPath: gitconfig
+          name: secrets
+        {{- end }}
+        {{- if .Values.secrets.config }}
+        - mountPath: root/.config/code-server/config.yaml
+          subPath: config.yaml
+          name: secrets
+        {{- end }}
+        - mountPath: /etc/containers/containers.conf
+          subPath: containers.conf
+          name: secrets
       volumes:
       {{- if eq "true" (.Values.storage.enable | toString) }}
       - name: storage
@@ -56,12 +79,22 @@ spec:
           defaultMode: 0400
           items:
           {{- range $key, $val := .Values.secrets.ssh }}
-          - key: ssh_{{ $val.name }}_public
-            path: ssh_{{ $val.name }}.pub
-          - key: ssh_{{ $val.name }}_private
-            path: ssh_{{ $val.name }}
+          - key: {{ $val.name }}_public
+            path: {{ $val.name }}.pub
+          - key: {{ $val.name }}_private
+            path: {{ $val.name }}
           {{- end }}
           {{- range $key, $val := .Values.secrets.ca }}
           - key: ca_{{ $val.name }}_public
             path: ca_{{ $val.name }}.crt
           {{- end }}
+          {{- if .Values.secrets.gitconfig }}
+          - key: gitconfig
+            path: gitconfig
+          {{- end }}
+          {{- if .Values.secrets.config }}
+          - key: config
+            path: config.yaml
+          {{- end }}
+          - key: podmanConfig
+            path: containers.conf

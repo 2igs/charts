@@ -2,19 +2,43 @@ image:
   repository: docker.io/2igs/ibexcode
   tag:
 
-# secrets:
-#   ssh:
-#   - name:
-#     public:
-#     private:
-#   ca:
-#   - name:
-#     public:
-
 ingress:
+  containerPort: 8080
   enable: false
-#   host:
+  host:
+  tls:
 
 storage:
   enable: false
   # hostPath:
+
+
+secrets:
+  config: |-
+    bind-addr: 0.0.0.0:8080
+    auth: none
+  podmanConfig: |+
+    [containers]
+    netns="host"
+    userns="host"
+    ipcns="host"
+    utsns="host"
+    cgroupns="host"
+    cgroups="disabled"
+    log_driver = "k8s-file"
+    default_sysctls = [] # Workaround
+    [engine]
+    cgroup_manager = "cgroupfs"
+    events_logger="file"
+    runtime="crun"
+  # gitconfig: |-
+  #   [user]
+  #     name = user
+  #     email = "user@example.com"
+  # ssh:
+  # - name:
+  #   public:
+  #   private:
+  # ca:
+  # - name: self
+  #   public:

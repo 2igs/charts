@@ -3,6 +3,7 @@ image:
   tag:
 
 ingress:
+  containerPort: 8080
   enable: false
   host:
   tls:

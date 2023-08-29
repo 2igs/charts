@@ -43,6 +43,11 @@ spec:
           subPath: {{ $val.name }}.pub
           name: secrets
         {{- end }}
+        {{- if .Values.gitconfig }}
+        - mountPath: /etc/gitconfig
+          subPath: gitconfig
+          name: secrets
+        {{- end }}
       volumes:
       {{- if eq "true" (.Values.storage.enable | toString) }}
       - name: storage
@@ -64,4 +69,8 @@ spec:
           {{- range $key, $val := .Values.secrets.ca }}
           - key: ca_{{ $val.name }}_public
             path: ca_{{ $val.name }}.crt
+          {{- end }}
+          {{- if .Values.gitconfig }}
+          - key: gitconfig
+            path: gitconfig
           {{- end }}

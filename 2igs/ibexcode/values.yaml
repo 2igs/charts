@@ -19,3 +19,8 @@ ingress:
 storage:
   enable: false
   # hostPath:
+
+# gitconfig: |-
+#   [user]
+#     name = ""
+#     email = ""

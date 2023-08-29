@@ -18,6 +18,18 @@ spec:
       - name: {{ .Chart.Name }}
         image: {{ $image }}
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            smarter-devices/fuse: 1
+          requests:
+            smarter-devices/fuse: 1
+        securityContext:
+          capabilities:
+            add:
+            - "SYS_ADMIN"
+            - "MKNOD"
+            - "SYS_CHROOT"
+            - "SETFCAP"
         ports:
         - name: http
           containerPort: {{ .Values.ingress.containerPort }}

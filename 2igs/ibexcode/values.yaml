@@ -13,7 +13,8 @@ image:
 
 ingress:
   enable: false
-#   host:
+  host:
+  tlsSecretName:
 
 storage:
   enable: false

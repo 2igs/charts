@@ -16,4 +16,7 @@ spec:
             port:
               number: 80
         pathType: Prefix
+  tls:
+  - hosts: [{{ .Values.ingress.host }}]
+    secretName: {{ .Values.ingress.tlsSecretName }}
 {{ end }}

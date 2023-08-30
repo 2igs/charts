@@ -35,6 +35,9 @@ spec:
         - name: http
           containerPort: {{ .Values.ingress.containerPort }}
           protocol: TCP
+        - name: websocket
+          containerPort: {{ .Values.ingress.websocketPort }}
+          protocol: TCP
         volumeMounts:
         {{- if eq "true" (.Values.storage.enable | toString) }}
         - mountPath: /storage

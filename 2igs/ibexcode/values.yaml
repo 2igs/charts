@@ -3,8 +3,11 @@ image:
   tag:
 
 ingress:
-  containerPort: 8080
   enable: false
+  containerPort: 8080
+  websocketPort: 24678
+  websocketHost:
+  websocketPath:
   host:
   tls:
 

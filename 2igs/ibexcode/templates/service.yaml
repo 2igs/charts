@@ -5,7 +5,12 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
 spec:
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
+  - name: http
+    port: {{ .Values.ingress.containerPort }}
+    targetPort: http
+    protocol: TCP
+  - name: websocket
+    port: {{ .Values.ingress.websocketPort }}
+    targetPort: websocket
+    protocol: TCP
   selector: {{ include "common.selectorLabels" . | nindent 4 }}

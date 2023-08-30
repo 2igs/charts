@@ -2,8 +2,30 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "common.fullname" . }}
+  name: {{ include "common.fullname" . }}-websocket
   labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/priority: "20"
+spec:
+  rules:
+  - host: {{ .Values.ingress.websocketHost }}
+    http:
+      paths:
+      - path: {{ .Values.ingress.websocketPath }}
+        backend:
+          service:
+            name: {{ include "common.fullname" . }}
+            port:
+              number: {{ .Values.ingress.websocketPort }}
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.fullname" . }}-http
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/priority: "10"
 spec:
   rules:
   - host: {{ .Values.ingress.host }}
@@ -14,8 +36,18 @@ spec:
           service:
             name: {{ include "common.fullname" . }}
             port:
-              number: 80
+              number: {{ .Values.ingress.containerPort }}
         pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.fullname" . }}-wildcard
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/priority: "9"
+spec:
+  rules:
   - host: "*.{{ .Values.ingress.host }}"
     http:
       paths:
@@ -24,7 +56,7 @@ spec:
           service:
             name: {{ include "common.fullname" . }}
             port:
-              number: 80
+              number: {{ .Values.ingress.containerPort }}
         pathType: Prefix
   tls: {{ .Values.ingress.tls | toYaml | nindent 2 }}
 {{ end }}

@@ -1,34 +1,11 @@
-{{ if eq (.Values.ingress.enable | toString) "true" }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "common.fullname" . }}-websocket
+  name: {{ include "common.fullname" . }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    traefik.ingress.kubernetes.io/priority: "20"
 spec:
   rules:
-  - host: {{ .Values.ingress.websocketHost }}
-    http:
-      paths:
-      - path: {{ .Values.ingress.websocketPath }}
-        backend:
-          service:
-            name: {{ include "common.fullname" . }}
-            port:
-              number: {{ .Values.ingress.websocketPort }}
-        pathType: Prefix
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ include "common.fullname" . }}-http
-  labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    traefik.ingress.kubernetes.io/priority: "10"
-spec:
-  rules:
-  - host: {{ .Values.ingress.host }}
+  - host: "{{ .Values.ingress.host }}"
     http:
       paths:
       - path: /
@@ -36,27 +13,6 @@ spec:
           service:
             name: {{ include "common.fullname" . }}
             port:
-              number: {{ .Values.ingress.containerPort }}
-        pathType: Prefix
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ include "common.fullname" . }}-wildcard
-  labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    traefik.ingress.kubernetes.io/priority: "9"
-spec:
-  rules:
-  - host: "*.{{ .Values.ingress.host }}"
-    http:
-      paths:
-      - path: /
-        backend:
-          service:
-            name: {{ include "common.fullname" . }}
-            port:
-              number: {{ .Values.ingress.containerPort }}
+              number: 80
         pathType: Prefix
   tls: {{ .Values.ingress.tls | toYaml | nindent 2 }}
-{{ end }}

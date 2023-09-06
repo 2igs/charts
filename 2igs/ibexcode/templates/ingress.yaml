@@ -16,3 +16,17 @@ spec:
               number: 80
         pathType: Prefix
   tls: {{ .Values.ingress.tls | toYaml | nindent 2 }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: ws
+  namespace: default
+spec:
+  entryPoints:
+  - ws
+  routes:
+  - match: HostSNI(`*`)
+    services:
+    - name: ibexcode-ws
+      port: 24678

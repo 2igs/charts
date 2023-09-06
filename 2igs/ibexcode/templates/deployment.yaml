@@ -15,11 +15,29 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum  }}
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum  }}
     spec:
-      hostNetwork: true
+      {{- /*
+      initContainers:
+      - name: {{ .Chart.Name }}-init
+        image: {{ $image }}
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', "code-server --install-extension /storage/extensions"]
+        volumeMounts:
+        {{- if eq "true" (.Values.storage.enable | toString) }}
+        - mountPath: /storage
+          name: storage
+        {{- end }}
+        */}}
       containers:
       - name: {{ .Chart.Name }}
         image: {{ $image }}
         imagePullPolicy: IfNotPresent
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/bash","-c","for f in /storage/extensions/*.vsix; do code-server --install-extension $f; done"]
+        ports:
+        - containerPort: 8080
+        - containerPort: 24678
         envFrom:
         - configMapRef:
             name: {{ include "common.fullname" . }}

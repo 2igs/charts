@@ -1,4 +1,3 @@
-{{ if eq (.Values.ingress.enable | toString) "true" }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,17 +5,7 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
-    http:
-      paths:
-      - path: /
-        backend:
-          service:
-            name: {{ include "common.fullname" . }}
-            port:
-              number: 80
-        pathType: Prefix
-  - host: "*.{{ .Values.ingress.host }}"
+  - host: "{{ .Values.ingress.host }}"
     http:
       paths:
       - path: /
@@ -27,4 +16,17 @@ spec:
               number: 80
         pathType: Prefix
   tls: {{ .Values.ingress.tls | toYaml | nindent 2 }}
-{{ end }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: ws
+  namespace: default
+spec:
+  entryPoints:
+  - ws
+  routes:
+  - match: HostSNI(`*`)
+    services:
+    - name: ibexcode-ws
+      port: 24678

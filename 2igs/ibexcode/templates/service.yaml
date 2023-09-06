@@ -5,7 +5,19 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
 spec:
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector: {{ include "common.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.fullname" . }}-ws
+  labels: {{ include "common.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: 24678
+    targetPort: 24678
+    protocol: TCP
   selector: {{ include "common.selectorLabels" . | nindent 4 }}

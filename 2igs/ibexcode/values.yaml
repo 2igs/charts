@@ -3,7 +3,6 @@ image:
   tag:
 
 ingress:
-  containerPort: 8080
   enable: false
   host:
   tls:
@@ -12,7 +11,10 @@ storage:
   enable: false
   # hostPath:
 
+# You can put env variabes bellow
+config:
 
+# Secrets to be mounted on the pod
 secrets:
   config: |-
     bind-addr: 0.0.0.0:8080
